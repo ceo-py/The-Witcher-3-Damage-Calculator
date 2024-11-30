@@ -1,3 +1,8 @@
+  // Browser.msgBox(a1)
+  // const range = e.range;
+  // const activeCellValue = range.getValue();
+  // const cellAddress = range.getA1Notation();
+
 var sheetName = "Skills";
 
 var mutationColorPaths = {
@@ -178,18 +183,29 @@ function getTickButtonStatus(sheet, mutations) {
 
 function canActivateTalent(talentName) {
   for (const talents of dependencies[talentName]) {
-    if (talents.every((cd) => mutations[cd].active)) {
+    const activeTalents = talents.every((cd) => mutations[cd].active)
+    if (activeTalents) {
       return true;
     }
   }
   return false;
 }
 
+function mutationsTalentLogic(spreadSheet, mutations) {
+  Object.keys(mutations)
+    .slice(4)
+    .forEach((mutation) => {
+      const canBeDone = canActivateTalent(mutation);
+      if (mutations[mutation].active) {
+        mutations[mutation].active = canBeDone;
+      }
+      if (!canBeDone) resetTickButton(spreadSheet, mutations[mutation].cell);
+    });
+}
+
 function talentFunctionality(e) {
   const spreadSheet = e.source.getActiveSheet();
   const activeSheetName = spreadSheet.getName();
-
-  // Browser.msgBox(a1)
   if (activeSheetName != sheetName) return;
 
   const strengthenedSynapsesValue = spreadSheet
@@ -202,15 +218,7 @@ function talentFunctionality(e) {
       resetTickButton(spreadSheet, mutations[mutation].cell);
     });
   }
-  const range = e.range;
-  // const activeCellValue = range.getValue();
-  // const cellAddress = range.getA1Notation();
   getTickButtonStatus(spreadSheet, mutations);
-  Object.keys(mutations)
-    .slice(4)
-    .forEach((mutation) => {
-      const canBeDone = canActivateTalent(mutation);
-      mutations[mutation].active = canBeDone;
-      if (!canBeDone) resetTickButton(spreadSheet, mutations[mutation].cell);
-    });
+  mutationsTalentLogic(spreadSheet, mutations)
+
 }
