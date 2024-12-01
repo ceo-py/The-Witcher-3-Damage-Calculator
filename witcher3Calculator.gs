@@ -181,6 +181,54 @@ var combatTalents = {
 };
 // combat talents setting end
 
+// signs talents setting start
+var signsTalents = {
+  T1: {
+    dropDownOptions: [3, 3, 2, 3, 3],
+    dropDownCells: ["T10:U10", "V10:W10", "X10:Y10", "Z10:AA10", "AB10:AC10"],
+  },
+  T2: {
+    dropDownOptions: [3, 3, 3, 3, 3],
+    dropDownCells: ["T13:U13", "V13:W13", "X13:Y13", "Z13:AA13", "AB13:AC13"],
+    requiredSpendPoints: { cell: "AE12:AF12", points: 6 },
+  },
+  T3: {
+    dropDownOptions: [3, 3, 3, 3, 3],
+    dropDownCells: ["T16:U16", "V16:W16", "X16:Y16", "Z16:AA16", "AB16:AC16"],
+    requiredSpendPoints: { cell: "AE15:AE15", points: 12 },
+  },
+  T4: {
+    dropDownOptions: [3, 3, 3, 3, 3],
+    dropDownCells: ["T19:U19", "V19:W19", "X19:Y19", "Z19:AA19", "AB19:AC19"],
+    requiredSpendPoints: { cell: "AE18:AE18", points: 18 },
+  },
+};
+// signs talents setting end
+
+// alchemy talents setting start
+var alchemyTalents = {
+  T1: {
+    dropDownOptions: [3, 3, 1, 3, 3],
+    dropDownCells: ["AK10:AL10", "AM10:AN10", "A010:AP10", "AQ10:AR10", "AS10:AT10"],
+  },
+  T2: {
+    dropDownOptions: [3, 3, 3, 3, 3],
+    dropDownCells: ["AK13:AL13", "AM13:AN13", "A013:AP13", "AQ13:AR13", "AS13:AT13"],
+    requiredSpendPoints: { cell: "AV12:AW12", points: 6 },
+  },
+  T3: {
+    dropDownOptions: [3, 3, 3, 3, 3],
+    dropDownCells: ["AK16:AL16", "AM16:AN16", "A016:AP16", "AQ16:AR16", "AS16:AT16"],
+    requiredSpendPoints: { cell: "AV15:AW15", points: 12 },
+  },
+  T4: {
+    dropDownOptions: [3, 3, 3, 3, 3],
+    dropDownCells: ["AK19:AL19", "AM19:AN19", "A019:AP19", "AQ19:AR19", "AS19:AT19"],
+    requiredSpendPoints: { cell: "AV18:AW18", points: 18 },
+  },
+};
+// alchemy talents setting end
+
 function makeColorPath(route, color) {
   route.forEach((cell) => {
     var cell = sheet.getRange(cell);
@@ -260,7 +308,7 @@ function mutationsTalentLogic(spreadSheet, mutations) {
     });
 }
 
-function combatTalentLogic(spreadSheet, talents) {
+function skillTalentLogic(spreadSheet, talents) {
   Object.keys(talents)
     .slice(1)
     .forEach((tier) => {
@@ -309,6 +357,17 @@ function talentFunctionality(e) {
 
   const isCombatCell = generateTalentCells(combatTalents).includes(cellAddress);
   if (isCombatCell) {
-    combatTalentLogic(spreadSheet, combatTalents);
+    skillTalentLogic(spreadSheet, combatTalents);
+    return
+  }
+  const isSignCell = generateTalentCells(signsTalents).includes(cellAddress);
+  if (isSignCell) {
+    skillTalentLogic(spreadSheet, signsTalents);
+    return
+  }
+  const isAlchemyTalentsCell = generateTalentCells(alchemyTalents).includes(cellAddress);
+  if (isAlchemyTalentsCell) {
+    skillTalentLogic(spreadSheet, alchemyTalents);
+    return
   }
 }
