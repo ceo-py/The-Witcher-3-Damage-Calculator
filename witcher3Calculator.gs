@@ -6,75 +6,53 @@
 var sheetName = "Skills";
 
 // mutations setting start
-var mutationColorPaths = {
-  green: "#274e13",
-  grey: "#d9d9d9",
-};
-
 var mutations = {
-  strengthenedSynapses: {
-    cell: "N44:P44",
-    colorPath: [],
-    active: false,
-  },
   toxicBlood: {
     cell: "T38:V38",
-    colorPath: ["U39", "U40", "U41", "U42", "T42", "S42", "R42", "Q42"],
     active: false,
   },
   deadlyCounter: {
     cell: "N38:P38",
-    colorPath: ["O40:039"],
     active: false,
   },
   magicSensibilities: {
     cell: "H38:J38",
-    colorPath: ["M42", "L42", "K42", "J42", "I42", "I41", "I40", "I39"],
     active: false,
   },
   piercingCold: {
     cell: "B38:D38",
-    colorPath: ["G36", "F36", "E36"],
     active: false,
   },
   conductorsOfMagic: {
     cell: "B44:D44",
-    colorPath: ["C39", "C40"],
     active: false,
   },
   adrenalineRush: {
     cell: "H32:J32",
-    colorPath: ["C34", "C33", "C32", "C31", "D31", "E31", "F31", "H31"],
     active: false,
   },
   secondLife: {
     cell: "B26:D26",
-    colorPath: ["G29", "F29", "E29", "D29", "C29", "C28", "C27"],
     active: false,
   },
   bloodbath: {
     cell: "N26:P26",
-    colorPath: ["G29", "F29", "E29", "D29", "C29", "C28", "C27"],
     active: false,
   },
   catEyes: {
     cell: "T32:V32",
-    colorPath: ["G29", "F29", "E29", "D29", "C29", "C28", "C27"],
     active: false,
   },
   metamorphosis: {
     cell: "Z26:AB26",
-    colorPath: ["W29", "X29", "Y29", "Z29", "AA29", "AA28", "AA27"],
     active: false,
   },
   euphoria: {
     cell: "Z38:AB38",
-    colorPath: ["W36", "X36", "Y36"],
     active: false,
   },
   mutatedSkin: {
     cell: "Z44:AB44",
-    colorPath: ["AA39", "AA40"],
     active: false,
   },
 };
@@ -209,21 +187,45 @@ var signsTalents = {
 var alchemyTalents = {
   T1: {
     dropDownOptions: [3, 3, 1, 3, 3],
-    dropDownCells: ["AK10:AL10", "AM10:AN10", "A010:AP10", "AQ10:AR10", "AS10:AT10"],
+    dropDownCells: [
+      "AK10:AL10",
+      "AM10:AN10",
+      "A010:AP10",
+      "AQ10:AR10",
+      "AS10:AT10",
+    ],
   },
   T2: {
     dropDownOptions: [3, 3, 3, 3, 3],
-    dropDownCells: ["AK13:AL13", "AM13:AN13", "A013:AP13", "AQ13:AR13", "AS13:AT13"],
+    dropDownCells: [
+      "AK13:AL13",
+      "AM13:AN13",
+      "A013:AP13",
+      "AQ13:AR13",
+      "AS13:AT13",
+    ],
     requiredSpendPoints: { cell: "AV12:AW12", points: 0 },
   },
   T3: {
     dropDownOptions: [3, 3, 3, 3, 3],
-    dropDownCells: ["AK16:AL16", "AM16:AN16", "A016:AP16", "AQ16:AR16", "AS16:AT16"],
+    dropDownCells: [
+      "AK16:AL16",
+      "AM16:AN16",
+      "A016:AP16",
+      "AQ16:AR16",
+      "AS16:AT16",
+    ],
     requiredSpendPoints: { cell: "AV15:AW15", points: 0 },
   },
   T4: {
     dropDownOptions: [3, 3, 3, 3, 3],
-    dropDownCells: ["AK19:AL19", "AM19:AN19", "A019:AP19", "AQ19:AR19", "AS19:AT19"],
+    dropDownCells: [
+      "AK19:AL19",
+      "AM19:AN19",
+      "A019:AP19",
+      "AQ19:AR19",
+      "AS19:AT19",
+    ],
     requiredSpendPoints: { cell: "AV18:AW18", points: 0 },
   },
 };
@@ -298,7 +300,7 @@ function dropDownCreateCell(spreadSheet, max_points, cell) {
 
 function mutationsTalentLogic(spreadSheet, mutations) {
   Object.keys(mutations)
-    .slice(4)
+    .slice(3)
     .forEach((mutation) => {
       const canBeDone = canActivateTalent(mutation);
       if (mutations[mutation].active) {
@@ -316,7 +318,8 @@ function skillTalentLogic(spreadSheet, talents) {
       const currentTierPoints = spreadSheet
         .getRange(currentTier.requiredSpendPoints.cell)
         .getValue();
-      const pointsEnough = currentTierPoints === currentTier.requiredSpendPoints.points
+      const pointsEnough =
+        currentTierPoints === currentTier.requiredSpendPoints.points;
       if (!pointsEnough) {
         currentTier.dropDownCells.forEach((cell) => {
           dropDownResetCell(spreadSheet, cell);
@@ -343,12 +346,11 @@ function talentFunctionality(e) {
   );
 
   if (isMutationsCell) {
-    const strengthenedSynapsesValue = spreadSheet
-      .getRange(mutations.strengthenedSynapses.cell)
-      .getValue();
-    if (!strengthenedSynapsesValue) {
+    const mutationActive = Object.values(mutations)
+      .slice(0, 3).some(m => spreadSheet.getRange(m.cell).getValue())
+    if (!mutationActive) {
       resetMutationSkills(spreadSheet, mutations);
-    } else if (strengthenedSynapsesValue) {
+    } else if (mutationActive) {
       getTickButtonStatus(spreadSheet, mutations);
       mutationsTalentLogic(spreadSheet, mutations);
     }
@@ -358,16 +360,17 @@ function talentFunctionality(e) {
   const isCombatCell = generateTalentCells(combatTalents).includes(cellAddress);
   if (isCombatCell) {
     skillTalentLogic(spreadSheet, combatTalents);
-    return
+    return;
   }
   const isSignCell = generateTalentCells(signsTalents).includes(cellAddress);
   if (isSignCell) {
     skillTalentLogic(spreadSheet, signsTalents);
-    return
+    return;
   }
-  const isAlchemyTalentsCell = generateTalentCells(alchemyTalents).includes(cellAddress);
+  const isAlchemyTalentsCell =
+    generateTalentCells(alchemyTalents).includes(cellAddress);
   if (isAlchemyTalentsCell) {
     skillTalentLogic(spreadSheet, alchemyTalents);
-    return
+    return;
   }
 }
