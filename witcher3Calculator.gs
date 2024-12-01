@@ -1,10 +1,11 @@
-  // Browser.msgBox(a1)
-  // const range = e.range;
-  // const activeCellValue = range.getValue();
-  // const cellAddress = range.getA1Notation();
+// Browser.msgBox(a1)
+// const range = e.range;
+// const activeCellValue = range.getValue();
+// const cellAddress = range.getA1Notation();
 
 var sheetName = "Skills";
 
+// mutations setting start
 var mutationColorPaths = {
   green: "#274e13",
   grey: "#d9d9d9",
@@ -78,7 +79,7 @@ var mutations = {
   },
 };
 
-var dependencies = {
+var mutationDependencies = {
   toxicBlood: [["strengthenedSynapses"]],
   deadlyCounter: [["strengthenedSynapses"]],
   magicSensibilities: [["strengthenedSynapses"]],
@@ -154,6 +155,31 @@ var dependencies = {
     ["adrenalineRush", "bloodbath", "catEyes", "euphoria", "toxicBlood"],
   ],
 };
+// mutations setting start
+
+// combat talents setting start
+var combatTalents = {
+  T1: {
+    dropDownOptions: [3, 3, 2, 1, 3],
+    dropDownCells: ["C10:D10", "E10:F10", "G10:H10", "I10:J10", "K10:L10"],
+  },
+  T2: {
+    dropDownOptions: [3, 3, 1, 3, 3],
+    dropDownCells: ["C13:D13", "E13:F13", "G13:H13", "I13:J13", "K13:L13"],
+    requiredSpendPoints: { cell: "N12:O12", points: 6 },
+  },
+  T3: {
+    dropDownOptions: [3, 3, 3, 3, 3],
+    dropDownCells: ["C16:D16", "E16:F16", "G16:H16", "I16:J16", "K16:L16"],
+    requiredSpendPoints: { cell: "N15:O15", points: 12 },
+  },
+  T4: {
+    dropDownOptions: [3, 3, 2, 3, 3],
+    dropDownCells: ["C19:D19", "E19:F19", "G19:H19", "I19:J19", "K19:L19"],
+    requiredSpendPoints: { cell: "N18:O18", points: 18 },
+  },
+};
+// combat talents setting end
 
 function makeColorPath(route, color) {
   route.forEach((cell) => {
@@ -167,9 +193,10 @@ function resetTickButton(sheet, cellPosition) {
   cellToChange.uncheck();
 }
 
-function resetMutationSkills(mutations) {
-  mutations.forEach((m) => {
-    // makeColorPath(m.colorPath, mutationColorPaths.green)
+function resetMutationSkills(spreadSheet, mutations) {
+  Object.keys(mutations).forEach((mutation) => {
+    mutations[mutation].active = false;
+    resetTickButton(spreadSheet, mutations[mutation].cell);
   });
 }
 
@@ -182,13 +209,33 @@ function getTickButtonStatus(sheet, mutations) {
 }
 
 function canActivateTalent(talentName) {
-  for (const talents of dependencies[talentName]) {
-    const activeTalents = talents.every((cd) => mutations[cd].active)
+  for (const talents of mutationDependencies[talentName]) {
+    const activeTalents = talents.every((cd) => mutations[cd].active);
     if (activeTalents) {
       return true;
     }
   }
   return false;
+}
+
+function generateTalentCells(talents) {
+  return Object.values(talents)
+    .map((t) => t.dropDownCells)
+    .flat().join(", ");
+}
+
+function generateButtonsOptions(start, end) {
+  return Array(end - start + 1)
+    .fill()
+    .map((_, idx) => start + idx);
+}
+
+function dropDownResetCell(spreadSheet, cell) {
+  const tier = generateButtonsOptions(0, 0);
+  dropdown = spreadSheet.getRange(cell);
+  rule = SpreadsheetApp.newDataValidation().requireValueInList(tier).build();
+  dropdown.setDataValidation(rule);
+  dropdown.setValue(0);
 }
 
 function mutationsTalentLogic(spreadSheet, mutations) {
@@ -208,17 +255,29 @@ function talentFunctionality(e) {
   const activeSheetName = spreadSheet.getName();
   if (activeSheetName != sheetName) return;
 
-  const strengthenedSynapsesValue = spreadSheet
-    .getRange(mutations.strengthenedSynapses.cell)
-    .getValue();
+  const range = e.range;
+  const activeCellValue = range.getValue();
+  const cellAddress = range.getA1Notation();
 
-  if (!strengthenedSynapsesValue) {
-    Object.keys(mutations).forEach((mutation) => {
-      mutations[mutation].active = false;
-      resetTickButton(spreadSheet, mutations[mutation].cell);
-    });
+  const isMutationsCell = Object.values(mutations).some((mutation) =>
+    mutation.cell.includes(cellAddress)
+  );
+
+  if (isMutationsCell) {
+    const strengthenedSynapsesValue = spreadSheet
+      .getRange(mutations.strengthenedSynapses.cell)
+      .getValue();
+    if (!strengthenedSynapsesValue) {
+      resetMutationSkills(spreadSheet, mutations);
+    } else if (strengthenedSynapsesValue) {
+      getTickButtonStatus(spreadSheet, mutations);
+      mutationsTalentLogic(spreadSheet, mutations);
+    }
+    return;
   }
-  getTickButtonStatus(spreadSheet, mutations);
-  mutationsTalentLogic(spreadSheet, mutations)
 
+  const isCombatCell = generateTalentCells(combatTalents).includes(cellAddress);
+  if (isCombatCell) {
+    
+  }
 }
