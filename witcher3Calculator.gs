@@ -221,21 +221,31 @@ function canActivateTalent(talentName) {
 function generateTalentCells(talents) {
   return Object.values(talents)
     .map((t) => t.dropDownCells)
-    .flat().join(", ");
+    .flat()
+    .join(", ");
 }
 
-function generateButtonsOptions(start, end) {
+function generateDropDownOptions(start, end) {
   return Array(end - start + 1)
     .fill()
     .map((_, idx) => start + idx);
 }
 
 function dropDownResetCell(spreadSheet, cell) {
-  const tier = generateButtonsOptions(0, 0);
+  const tier = generateDropDownOptions(0, 0);
+  const dropdown = spreadSheet.getRange(cell);
+  const rule = SpreadsheetApp.newDataValidation()
+    .requireValueInList(tier)
+    .build();
+  dropdown.setDataValidation(rule);
+  dropdown.setValue(0);
+}
+
+function dropDownCreateCell(spreadSheet, max_points, cell) {
+  tier = generateDropDownOptions(0, max_points);
   dropdown = spreadSheet.getRange(cell);
   rule = SpreadsheetApp.newDataValidation().requireValueInList(tier).build();
   dropdown.setDataValidation(rule);
-  dropdown.setValue(0);
 }
 
 function mutationsTalentLogic(spreadSheet, mutations) {
@@ -247,6 +257,27 @@ function mutationsTalentLogic(spreadSheet, mutations) {
         mutations[mutation].active = canBeDone;
       }
       if (!canBeDone) resetTickButton(spreadSheet, mutations[mutation].cell);
+    });
+}
+
+function combatTalentLogic(spreadSheet, talents) {
+  Object.keys(talents)
+    .slice(1)
+    .forEach((tier) => {
+      const currentTier = talents[tier];
+      const currentTierPoints = spreadSheet
+        .getRange(currentTier.requiredSpendPoints.cell)
+        .getValue();
+      const pointsEnough = currentTierPoints >= currentTier.requiredSpendPoints.points
+      if (!pointsEnough) {
+        currentTier.dropDownCells.forEach((cell) => {
+          dropDownResetCell(spreadSheet, cell);
+        });
+      } else if (pointsEnough) {
+        currentTier.dropDownCells.forEach((cell, i) => {
+          dropDownCreateCell(spreadSheet, currentTier.dropDownOptions[i], cell);
+        });
+      }
     });
 }
 
@@ -278,6 +309,6 @@ function talentFunctionality(e) {
 
   const isCombatCell = generateTalentCells(combatTalents).includes(cellAddress);
   if (isCombatCell) {
-    
+    combatTalentLogic(spreadSheet, combatTalents);
   }
 }
