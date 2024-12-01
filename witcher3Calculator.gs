@@ -166,17 +166,17 @@ var combatTalents = {
   T2: {
     dropDownOptions: [3, 3, 1, 3, 3],
     dropDownCells: ["C13:D13", "E13:F13", "G13:H13", "I13:J13", "K13:L13"],
-    requiredSpendPoints: { cell: "N12:O12", points: 6 },
+    requiredSpendPoints: { cell: "N12:O12", points: 0 },
   },
   T3: {
     dropDownOptions: [3, 3, 3, 3, 3],
     dropDownCells: ["C16:D16", "E16:F16", "G16:H16", "I16:J16", "K16:L16"],
-    requiredSpendPoints: { cell: "N15:O15", points: 12 },
+    requiredSpendPoints: { cell: "N15:O15", points: 0 },
   },
   T4: {
     dropDownOptions: [3, 3, 2, 3, 3],
     dropDownCells: ["C19:D19", "E19:F19", "G19:H19", "I19:J19", "K19:L19"],
-    requiredSpendPoints: { cell: "N18:O18", points: 18 },
+    requiredSpendPoints: { cell: "N18:O18", points: 0 },
   },
 };
 // combat talents setting end
@@ -190,17 +190,17 @@ var signsTalents = {
   T2: {
     dropDownOptions: [3, 3, 3, 3, 3],
     dropDownCells: ["T13:U13", "V13:W13", "X13:Y13", "Z13:AA13", "AB13:AC13"],
-    requiredSpendPoints: { cell: "AE12:AF12", points: 6 },
+    requiredSpendPoints: { cell: "AE12:AF12", points: 0 },
   },
   T3: {
     dropDownOptions: [3, 3, 3, 3, 3],
     dropDownCells: ["T16:U16", "V16:W16", "X16:Y16", "Z16:AA16", "AB16:AC16"],
-    requiredSpendPoints: { cell: "AE15:AE15", points: 12 },
+    requiredSpendPoints: { cell: "AE15:AE15", points: 0 },
   },
   T4: {
     dropDownOptions: [3, 3, 3, 3, 3],
     dropDownCells: ["T19:U19", "V19:W19", "X19:Y19", "Z19:AA19", "AB19:AC19"],
-    requiredSpendPoints: { cell: "AE18:AE18", points: 18 },
+    requiredSpendPoints: { cell: "AE18:AE18", points: 0 },
   },
 };
 // signs talents setting end
@@ -214,17 +214,17 @@ var alchemyTalents = {
   T2: {
     dropDownOptions: [3, 3, 3, 3, 3],
     dropDownCells: ["AK13:AL13", "AM13:AN13", "A013:AP13", "AQ13:AR13", "AS13:AT13"],
-    requiredSpendPoints: { cell: "AV12:AW12", points: 6 },
+    requiredSpendPoints: { cell: "AV12:AW12", points: 0 },
   },
   T3: {
     dropDownOptions: [3, 3, 3, 3, 3],
     dropDownCells: ["AK16:AL16", "AM16:AN16", "A016:AP16", "AQ16:AR16", "AS16:AT16"],
-    requiredSpendPoints: { cell: "AV15:AW15", points: 12 },
+    requiredSpendPoints: { cell: "AV15:AW15", points: 0 },
   },
   T4: {
     dropDownOptions: [3, 3, 3, 3, 3],
     dropDownCells: ["AK19:AL19", "AM19:AN19", "A019:AP19", "AQ19:AR19", "AS19:AT19"],
-    requiredSpendPoints: { cell: "AV18:AW18", points: 18 },
+    requiredSpendPoints: { cell: "AV18:AW18", points: 0 },
   },
 };
 // alchemy talents setting end
@@ -316,7 +316,7 @@ function skillTalentLogic(spreadSheet, talents) {
       const currentTierPoints = spreadSheet
         .getRange(currentTier.requiredSpendPoints.cell)
         .getValue();
-      const pointsEnough = currentTierPoints >= currentTier.requiredSpendPoints.points
+      const pointsEnough = currentTierPoints === currentTier.requiredSpendPoints.points
       if (!pointsEnough) {
         currentTier.dropDownCells.forEach((cell) => {
           dropDownResetCell(spreadSheet, cell);
