@@ -190,7 +190,7 @@ var alchemyTalents = {
     dropDownCells: [
       "AK10:AL10",
       "AM10:AN10",
-      "A010:AP10",
+      "AO10:AP10",
       "AQ10:AR10",
       "AS10:AT10",
     ],
