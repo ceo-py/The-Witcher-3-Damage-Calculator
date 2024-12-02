@@ -173,12 +173,12 @@ var signsTalents = {
   T3: {
     dropDownOptions: [3, 3, 3, 3, 3],
     dropDownCells: ["T16:U16", "V16:W16", "X16:Y16", "Z16:AA16", "AB16:AC16"],
-    requiredSpendPoints: { cell: "AE15:AE15", points: 0 },
+    requiredSpendPoints: { cell: "AE15:AF15", points: 0 },
   },
   T4: {
     dropDownOptions: [3, 3, 3, 3, 3],
     dropDownCells: ["T19:U19", "V19:W19", "X19:Y19", "Z19:AA19", "AB19:AC19"],
-    requiredSpendPoints: { cell: "AE18:AE18", points: 0 },
+    requiredSpendPoints: { cell: "AE18:AF18", points: 0 },
   },
 };
 // signs talents setting end
@@ -200,7 +200,7 @@ var alchemyTalents = {
     dropDownCells: [
       "AK13:AL13",
       "AM13:AN13",
-      "A013:AP13",
+      "AO13:AP13",
       "AQ13:AR13",
       "AS13:AT13",
     ],
@@ -211,7 +211,7 @@ var alchemyTalents = {
     dropDownCells: [
       "AK16:AL16",
       "AM16:AN16",
-      "A016:AP16",
+      "AO16:AP16",
       "AQ16:AR16",
       "AS16:AT16",
     ],
@@ -222,7 +222,7 @@ var alchemyTalents = {
     dropDownCells: [
       "AK19:AL19",
       "AM19:AN19",
-      "A019:AP19",
+      "AO19:AP19",
       "AQ19:AR19",
       "AS19:AT19",
     ],
@@ -230,13 +230,6 @@ var alchemyTalents = {
   },
 };
 // alchemy talents setting end
-
-function makeColorPath(route, color) {
-  route.forEach((cell) => {
-    var cell = sheet.getRange(cell);
-    cell.setBackground(color);
-  });
-}
 
 function resetTickButton(sheet, cellPosition) {
   const cellToChange = sheet.getRange(cellPosition);
@@ -332,7 +325,7 @@ function skillTalentLogic(spreadSheet, talents) {
     });
 }
 
-function talentFunctionality(e) {
+function onEdit(e) {
   const spreadSheet = e.source.getActiveSheet();
   const activeSheetName = spreadSheet.getName();
   if (activeSheetName != sheetName) return;
